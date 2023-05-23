@@ -1,14 +1,8 @@
 from dotenv import load_dotenv
-from enum import Enum
-import os
+from enums import Animal
+from dataGatherer import *
 
 load_dotenv()
-
-my_password = os.getenv('Password')
-
-class Animal(Enum): 
-    DOG = 'Dog'
-    CAT = 'Cat'
 
 target_animal_not_chosen = True
 
@@ -22,8 +16,11 @@ while target_animal_not_chosen:
   except ValueError:
     print('Please enter a valid animal: (Dog or Cat)\n')
 
-print(f'You chose {target_animal}')
+def main(target_animal):
+  print(f'You chose {target_animal}!')
+  access_token = get_token()
+  print(access_token)
 
-
+main(target_animal)
 
 

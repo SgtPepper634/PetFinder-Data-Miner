@@ -1,7 +1,10 @@
+# from datetime import datetime
 import requests
 import os
 
 BASE_URL = 'https://api.petfinder.com/v2'
+
+s = requests.Session()
 
 """
 Get the API token from the Petfinder API.
@@ -24,3 +27,33 @@ def get_token():
     token = response.json()['access_token']
 
     return token
+
+
+def get_animals(animal_type, start_datetime_iso):
+    token = get_token()
+    s.headers.update({'Authorization': f'Bearer {token}'})
+    
+    first_response = s.get(
+        f'{BASE_URL}/animals',
+        params={
+            'type': animal_type,
+            'page': 1,
+            'limit': 100,
+            'after': '0001-01-01T00:00:00+0000',
+            'sort': '-recent'
+        }
+    )
+
+    first_response_data = first_response.json()
+    print(first_response_data)
+    pagination_data = first_response_data['pagination']
+    animal_data = first_response_data['animals']
+    total_pages = pagination_data['total_pages']
+
+    # Upload first animal data
+
+    # Loop through the rest of the pages and do same
+    #   if encounter 403 error retry with new token 
+
+    print(animal_data)
+    return animal_data

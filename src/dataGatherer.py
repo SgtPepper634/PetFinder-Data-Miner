@@ -1,6 +1,7 @@
 # from datetime import datetime
 import requests
 import os
+from mongo import insert_animals
 
 BASE_URL = 'https://api.petfinder.com/v2'
 
@@ -32,14 +33,13 @@ def get_token():
 def get_animals(animal_type, start_datetime_iso):
     token = get_token()
     s.headers.update({'Authorization': f'Bearer {token}'})
-    
     first_response = s.get(
         f'{BASE_URL}/animals',
         params={
             'type': animal_type,
             'page': 1,
             'limit': 100,
-            'after': '0001-01-01T00:00:00+0000',
+            'after': start_datetime_iso,
             'sort': '-recent'
         }
     )
@@ -50,10 +50,9 @@ def get_animals(animal_type, start_datetime_iso):
     animal_data = first_response_data['animals']
     total_pages = pagination_data['total_pages']
 
-    # Upload first animal data
+    insert_animals(animal_data, animal_type)
 
     # Loop through the rest of the pages and do same
     #   if encounter 403 error retry with new token 
 
-    print(animal_data)
     return animal_data
